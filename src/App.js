@@ -14,14 +14,13 @@ function App() {
   const [filterType, setFilterType] = useState('DISCOVER');
   const [currentPage, setCurrentPage] = useState(1);
   const [moviesData, setMoviesData] = useState([]);
-  const [sortByPopularity, setSortByPopularity] = useState('desc');
   const [searchMovieText, setSearchMovieText] = useState('');
 
   
-  const resetState = useCallback(() => {
+  const resetState = () => {
     setMoviesData([]);
     setCurrentPage(1);
-  }, [])
+  }
 
   const changeHandler = (event) => {
     resetState();
@@ -29,52 +28,30 @@ function App() {
   };
 
   const debouncedChangeHandler = useMemo(
-    () => debounce(changeHandler, 500)
+    () => debounce(changeHandler, 150)
   , []);
 
   const fetchData = useCallback(async () => {
-    const result = await axios.get(movieUtilityHandler(filterType, {sortByPopularity, currentPage, searchMovieText}));
+    const result = await axios.get(movieUtilityHandler(filterType, {currentPage, searchMovieText}));
     const data = result.data;
 
-    console.log(currentPage, moviesData)
     setCurrentPage(currentPage + 1);
     setMoviesData([...moviesData, ...data.results]);
     setTotalPage(data.total_pages)
-  }, [moviesData, currentPage, filterType, sortByPopularity, searchMovieText])
-
-  // useEffect(() => {
-
-  //   async function applyFilters(){
-  //     const result = await axios.get(`https://api.themoviedb.org/3/discover/movie?sort_by=popularity.${sortByPopularity}&api_key=${process.env.REACT_APP_API_KEY}&page=1`);
-  //     const data = result.data;
-
-  //     resetState();
-  //     setMoviesData(data.results);
-  //     setTotalPage(data.total_pages)
-  //   }
-
-  //   applyFilters();
-  // }, [sortByPopularity])
+  }, [moviesData, currentPage, filterType, searchMovieText])
 
   useEffect(() => {
     fetchData();
   }, [])
 
   useEffect(() => {
-    if(searchMovieText && searchMovieText !== ''){
+    if(searchMovieText && searchMovieText !== '')
       setFilterType('SEARCH')
-    }
-    else {
-      console.log('HERE');
+    else
       setFilterType('DISCOVER')
-    }
 
     fetchData();
   }, [searchMovieText])
-
-  useEffect(() => {
-    console.log("🚀 ~ file: App.js ~ line 79 ~ App ~ currentPage, moviesData", currentPage, moviesData)
-  }, [currentPage, moviesData])
 
   useEffect(() => {
     return () => {
@@ -86,21 +63,11 @@ function App() {
     <div className="container">
 
       <div>
-        <h1>Search</h1>
+        <h1 style={{fontSize: '34px'}}>Search</h1>
         <div>
-          <input type="text" placeholder="Search a movie" onChange={debouncedChangeHandler}/>
+          <input className="search-bar--input" type="text" placeholder="Search a movie" onChange={debouncedChangeHandler}/>
         </div>
       </div>
-
-      {/* <div>
-        <h2>Filters</h2>
-        <div>
-          <select name="sort" onChange={(e) => setSortByPopularity(e.target.value)} defaultValue={"desc"}>
-          <option value="asc">Ascending</option>
-          <option value="desc">Descending</option>
-          </select>
-        </div>
-      </div> */}
 
       <InfiniteScroll
         dataLength={moviesData.length}
