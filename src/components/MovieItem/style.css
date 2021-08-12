@@ -32,13 +32,22 @@
 
 .movie-item--container .movie-item--overlay-text .movie-item--title {
     margin: 0 1px;
-    font-weight: 700;
     color: rgba(225, 225, 225, 0.9);
-    display: inline-block;
-    line-height: 40px;
-    font-size: 24px;
+    display: block;
     text-align: center;
     text-decoration: none;
+}
+
+.movie-item--container .movie-item--overlay-text .movie-item--title-1 {
+    font-weight: 700;
+    line-height: 40px;
+    font-size: 24px;
+}
+
+.movie-item--container .movie-item--overlay-text .movie-item--title-2 {
+    font-weight: 500;
+    line-height: 40px;
+    font-size: 20px;
 }
 
 .movie-item--container:hover .movie-item--overlay-text {
