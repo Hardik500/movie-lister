@@ -8,8 +8,12 @@ export const movieUtilityHandler = (filterType, props) => {
 
     if(filterType === 'SEARCH' && searchMovieText){
         searchQuery += `/search/movie?api_key=${API_KEY}&query=${searchMovieText}`
+    } else if (filterType === 'TOPRATED') {
+        searchQuery += `/movie/top_rated?api_key=${API_KEY}`
+    } else if (filterType === 'UPCOMING') {
+        searchQuery += `/movie/upcoming?api_key=${API_KEY}`
     } else {
-        searchQuery += `/discover/movie?api_key=${API_KEY}`
+        searchQuery += `/movie/popular?api_key=${API_KEY}`
     }
 
     if(currentPage){
