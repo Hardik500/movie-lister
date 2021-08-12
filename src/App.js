@@ -6,8 +6,11 @@ import debounce from 'lodash.debounce';
 import InfiniteScroll from 'react-infinite-scroll-component'
 
 import MovieItem from './components/MovieItem';
-
+import SkeletonLoader from './components/SkeletonLoader'
 import { movieUtilityHandler } from './utils/helper';
+
+const height = 300;
+const width = 200;
 
 function App() {
   const [totalPage, setTotalPage] = useState(null);
@@ -16,7 +19,6 @@ function App() {
   const [moviesData, setMoviesData] = useState([]);
   const [searchMovieText, setSearchMovieText] = useState('');
 
-  
   const resetState = () => {
     setMoviesData([]);
     setCurrentPage(1);
@@ -29,10 +31,10 @@ function App() {
 
   const debouncedChangeHandler = useMemo(
     () => debounce(changeHandler, 150)
-  , []);
+    , []);
 
   const fetchData = useCallback(async () => {
-    const result = await axios.get(movieUtilityHandler(filterType, {currentPage, searchMovieText}));
+    const result = await axios.get(movieUtilityHandler(filterType, { currentPage, searchMovieText }));
     const data = result.data;
 
     setCurrentPage(currentPage + 1);
@@ -45,7 +47,7 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if(searchMovieText && searchMovieText !== '')
+    if (searchMovieText && searchMovieText !== '')
       setFilterType('SEARCH')
     else
       setFilterType('DISCOVER')
@@ -61,24 +63,21 @@ function App() {
 
   return (
     <div className="container">
-
       <div>
-        <h1 style={{fontSize: '34px'}}>Search</h1>
-        <div>
-          <input className="search-bar--input" type="text" placeholder="Search a movie" onChange={debouncedChangeHandler}/>
-        </div>
+        <input className="search-bar--input" type="text" placeholder="Search a movie" onChange={debouncedChangeHandler} />
       </div>
 
       <InfiniteScroll
         dataLength={moviesData.length}
         next={fetchData}
-        loader={<h2>Loading...</h2>}
+        loader={<div className="movie-container">{Array.from(Array(20).keys()).map((e, index) => <SkeletonLoader key={index} height={height} width={width} />)}</div>}
         hasMore={currentPage < totalPage}
-        endMessage={<h2>No results found</h2>}
+        endMessage={<hr/>}
       >
         <div className="movie-container">
-          {moviesData.filter((movieData) => movieData.poster_path !== null).map((movieData, index) => <MovieItem key={index} data={movieData} />)}
+          {moviesData.filter((movieData) => movieData.poster_path !== null).map((movieData, index) => <MovieItem key={index} data={movieData} height={height} width={width} />)}
         </div>
+
       </InfiniteScroll>
     </div>
   );
